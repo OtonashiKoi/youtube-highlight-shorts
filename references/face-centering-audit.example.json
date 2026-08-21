@@ -1,0 +1,30 @@
+{
+  "canvas_width": 1080,
+  "target_x": 540,
+  "samples": [
+    {
+      "time": 0.5,
+      "role": "start",
+      "face_center_x": 540,
+      "head_left_x": 260,
+      "head_right_x": 820,
+      "method": "two-eye midpoint"
+    },
+    {
+      "time": 30.0,
+      "role": "middle",
+      "face_center_x": 548,
+      "head_left_x": 270,
+      "head_right_x": 826,
+      "method": "two-eye midpoint"
+    },
+    {
+      "time": 59.5,
+      "role": "end",
+      "face_center_x": 534,
+      "head_left_x": 254,
+      "head_right_x": 814,
+      "method": "manual validated landmarks"
+    }
+  ]
+}

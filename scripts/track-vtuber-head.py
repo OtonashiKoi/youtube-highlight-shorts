@@ -32,9 +32,12 @@ def purple_candidates(frame, search):
 
 
 def eye_centers(frame):
-    """Return candidate midpoints of two cyan irises."""
+    """Return candidate midpoints of the host's cyan/red heterochromatic irises."""
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-    mask = cv2.inRange(hsv, np.array((75, 70, 70)), np.array((105, 255, 255)))
+    cyan = cv2.inRange(hsv, np.array((75, 70, 70)), np.array((105, 255, 255)))
+    red_low = cv2.inRange(hsv, np.array((0, 70, 70)), np.array((14, 255, 255)))
+    red_high = cv2.inRange(hsv, np.array((170, 70, 70)), np.array((179, 255, 255)))
+    mask = cv2.bitwise_or(cyan, cv2.bitwise_or(red_low, red_high))
     mask[:200] = 0
     mask[760:] = 0
     mask[:, :550] = 0
@@ -56,18 +59,54 @@ def eye_centers(frame):
     return pairs
 
 
+def sunglasses_centers(frame):
+    """Return face-centre candidates from the connected sunglass silhouette."""
+    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    mask = cv2.inRange(gray, 0, 65)
+    mask[:250] = 0
+    mask[800:] = 0
+    mask[:, :500] = 0
+    mask[:, 1500:] = 0
+    count, _, stats, centroids = cv2.connectedComponentsWithStats(mask)
+    candidates = []
+    for index in range(1, count):
+        x, y, w, h, area = stats[index]
+        cx, cy = centroids[index]
+        if 250 <= w <= 460 and 90 <= h <= 210 and 8000 <= area <= 30000:
+            score = abs(w - 343) * 0.35 + abs(h - 141) * 0.45 + abs(area - 14500) / 900
+            candidates.append((score, float(cx), float(cy)))
+    return candidates
+
+
 def reacquire_head(frame, search, previous=None):
     """Return the eye midpoint after validating it against the hair ornament."""
     best = None
+    face_candidates = [(*candidate, 'eyes') for candidate in eye_centers(frame)]
+    face_candidates += [(*candidate, 'sunglasses') for candidate in sunglasses_centers(frame)]
     for shape_score, flower_x, flower_y, area in purple_candidates(frame, search):
-        for eye_score, eye_x, eye_y in eye_centers(frame):
+        for eye_score, eye_x, eye_y, method in face_candidates:
             dx, dy = flower_x - eye_x, flower_y - eye_y
-            if not (35 <= dx <= 190 and -360 <= dy <= -120):
-                continue
-            relation = abs(dx - 105) * 0.65 + abs(dy + 245) * 0.25
+            if method == 'eyes':
+                if not (35 <= dx <= 190 and -360 <= dy <= -120):
+                    continue
+                relation = abs(dx - 105) * 0.65 + abs(dy + 245) * 0.25
+            else:
+                if not (170 <= dx <= 290 and -270 <= dy <= -80):
+                    continue
+                relation = abs(dx - 230) * 0.45 + abs(dy + 175) * 0.25
             continuity = 0 if previous is None else abs(eye_x - previous[0]) * 0.25 + abs(eye_y - previous[1]) * 0.12
             candidate = (shape_score + eye_score + relation + continuity,
                          eye_x, eye_y, area)
+            if best is None or candidate[0] < best[0]:
+                best = candidate
+    if best is None:
+        # A cyan/red iris pair is sufficiently distinctive when the upper hair
+        # ornament is cropped or hidden. Keep this fallback inside the host ROI.
+        for eye_score, eye_x, eye_y, method in face_candidates:
+            if method != 'eyes' or not (700 <= eye_x <= 1300 and 300 <= eye_y <= 650):
+                continue
+            continuity = 0 if previous is None else abs(eye_x - previous[0]) * 0.25 + abs(eye_y - previous[1]) * 0.12
+            candidate = (100 + eye_score + continuity, eye_x, eye_y, 0)
             if best is None or candidate[0] < best[0]:
                 best = candidate
     return best
@@ -120,7 +159,7 @@ def main():
     parser.add_argument('--anchor-offset', type=float, default=345.0,
                         help='Source crop x = eye midpoint x - this value')
     parser.add_argument('--min-crop-x', type=float, default=320.0)
-    parser.add_argument('--max-crop-x', type=float, default=660.0)
+    parser.add_argument('--max-crop-x', type=float, default=900.0)
     parser.add_argument('--cuts', default='', help='Comma-separated editorial cut times in seconds')
     args = parser.parse_args()
 

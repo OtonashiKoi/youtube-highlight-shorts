@@ -11,7 +11,8 @@ Require every item before calling an output final:
 - Each Short has an independently understandable setup, development, payoff or conclusion, and clean exit; the first and final 10 seconds plus every internal jump cut were reviewed in real time.
 - No final keep map was generated solely from subtitle boundaries plus fixed padding.
 - Locked PNG caption style unchanged: `y=210`, 138 px Microsoft JhengHei Bold, 7–8 characters per line, two lines maximum, white-to-`#9169CD`, 15 px white rim, 7 px black keyline.
-- Face framing follows the two-eye midpoint across representative motion extremes.
+- Face framing targets canvas `x=540` from the two-eye midpoint or validated manual landmarks—not the sprite/crop centre—and covers start, midpoint, end, every cut, and motion extremes.
+- `臉部置中稽核.json` passes: median centre error `<=24 px`, 95th-percentile error `<=48 px`, and left/right visible-head margin asymmetry `<=10%`; automatic-tracking failure was resolved with reviewed manual keyframes rather than a silent fixed-crop fallback.
 - Every direct chat-dependent reply audited; native boxes included where readable. Any AI-reconstructed card is generated separately from that livestream's own card/frame, evidence-backed, labeled reconstructed, checked character-by-character, and free of baked checkerboard backgrounds.
 - Every speech gap at least 0.8 seconds reviewed; all time-dependent assets remapped after cuts.
 - Uncaptioned 1080×1920 master retained and used as the exact source for the captioned version.

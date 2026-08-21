@@ -82,9 +82,10 @@ Read `references/setup.md` before the first run on a machine. Use PowerShell 7 o
 
 - Favor self-contained moments with setup, payoff, and a clean exit; usually 30–180 seconds.
 - Treat narrative completeness as a release gate: every Short must make sense from its first frame without the viewer knowing the previous livestream sentence. Review the first 10 seconds and the final 10 seconds in real time, then review every internal jump cut for missing referents or abrupt topic changes.
-- Treat genuine 1080p input, completed language-model subtitle proofreading, and the approved caption-style contract as mandatory release gates. Do not render final deliverables when any gate fails.
+- Treat genuine 1080p input, completed language-model subtitle proofreading, the approved caption-style contract, and face-centred symmetric framing as mandatory release gates. Do not render final deliverables when any gate fails.
 - Add 0.5–2 seconds of conversational context when cuts feel abrupt, without overlapping adjacent clips unnecessarily.
 - Keep horizontal clips at source resolution and frame rate where feasible.
+- For every 1080×1920 Short, align the host's facial centre—not the character sprite box or a fixed source crop—to canvas `x=540`. Use the two-eye midpoint when visible; when eyes are obscured, use validated facial/head landmarks or manually reviewed crop keyframes. Audit the start, midpoint, end, every editorial cut, and each left/right motion extreme. Require median absolute centre error `<=24 px`, 95th-percentile error `<=48 px`, and left/right visible-head margin asymmetry `<=10%` of visible head width. Automatic tracking failure must stop release or trigger manual keyframes; never silently fall back to one fixed crop. Save `臉部置中稽核.json` and pass it through `scripts/validate-face-centering.py` before caption rendering.
 - Render Shorts as 1080×1920 H.264/AAC. Use `scripts/render-talk-short.py` and preserve the approved house style in `references/talk-short-style.md` unless the user explicitly requests a different design. The caption path is locked to the renderer's `APPROVED_CAPTION_STYLE` contract: do not replace its transparent PNG gradient layers with ASS/libass subtitles, editor defaults, or ad-hoc `force_style` values. A mismatch in caption position, font, gradient, outlines, line width, or line count must stop the release instead of silently producing a fallback. The script must first create `shorts_無字幕/NN_title_直式_無字幕.mp4`, validate it, and then use that file as the picture-and-audio source for `shorts/NN_title_直式.mp4`. Always retain both files. Classify by the highlight's topic, title, transcript, and payoff—not by whether a game happens to be visible in the source layout. Use `--layout talk` for 雜談, AI stories, programming discussions, and other host-led topics. Use `--layout gameplay` only when understanding the selected moment depends on the game, so the upper third preserves the game view/UI and the lower area carries the enlarged host. Avoid blind center-crops that remove faces, captions, or gameplay UI.
 - Keep each segment's SRT timestamps relative to the segment. Treat the uncaptioned master as mandatory even when the user ultimately wants subtitles.
 - Chat cards identify the real conversational cause: crop and display the native player-message box already present in the source layout, align it to the start of the host's read/reply, and omit the card when the topic was host-initiated. A later related message may be shown only as a clearly labeled follow-up, never as the trigger. Do not redraw a visible source chat box as plain text.
@@ -106,6 +107,7 @@ Create:
   逐字稿.txt
   逐字稿.srt
   字幕校正狀態.json
+  臉部置中稽核.json
   highlights.json
   精華時間碼.md
   聊天室觸發留言稽核.md
