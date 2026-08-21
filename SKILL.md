@@ -47,6 +47,9 @@ Read `references/setup.md` before the first run on a machine. Use PowerShell 7 o
    - Run a final text audit on every SRT and reject files that still contain unintended Simplified Chinese, obvious recognition errors, or cues that violate the caption line limits.
 7. Run `scripts/extract-review-frames.py --video <dir>/source.mp4 --output <dir>/review-frames --mode overview`. Read the timestamp manifest and inspect representative frames together with the proofread transcript.
 8. Read `references/highlight-selection.md`, inspect transcript semantics plus audio and visual evidence, then write a provisional `highlights.json` following its schema.
+   - Before rendering, audit each candidate as a complete story arc: identify the initiating question or setup, the host's first dependent response, the development, the payoff or conclusion, and a clean exit.
+   - If a clip begins with a pronoun, answer, correction, or punchline whose referent is outside the cut, move the start backward until the cause is audible or visible. A title card alone does not replace missing conversational setup.
+   - Reject or expand a candidate whose opening, middle, or ending cannot be understood without the surrounding livestream.
 9. Run the frame script again with `--mode highlights --highlights <dir>/highlights.json` to densely inspect each candidate. Adjust cut boundaries and reject visually weak or misleading candidates.
 10. Audit chat-triggered topics before creating chat cards:
    - Work backward from the host's first audible read or reply and identify the exact message that opened the topic. Record the original author, verbatim message, source timestamp, clip-relative timestamp, and evidence source in `<output>/聊天室觸發留言稽核.md`.
@@ -66,6 +69,7 @@ Read `references/setup.md` before the first run on a machine. Use PowerShell 7 o
    - Use word timestamps, corrected SRT gaps, waveform evidence, and visual continuity to identify intervals with no useful host speech.
    - Remove dead air, waiting, reading-without-payoff, repeated filler, and other non-content pauses when the cut does not damage a reaction, comedic beat, sentence meaning, or visible action.
    - Preserve short natural breathing and intentional comedic timing. As a default review rule, inspect every no-speech gap `>=0.8s`; gaps around `1.2s` or longer should be cut or explicitly justified.
+   - Never build final keep intervals mechanically from subtitle cues with one fixed padding value. Such compression can delete the question, the referent of a pronoun, a visible chat trigger, reaction timing, or the bridge between two thoughts. Use transcript semantics and visual continuity to approve every jump cut.
    - Apply the same time-remap to video, audio, SRT cues, native chat-card timing, and face-tracking data. Rebase all timestamps after each removal and verify that no subtitle or chat card drifts out of sync.
    - Write `<output>/停頓刪減稽核.md` listing original interval, removed duration, reason, and retained intentional pauses.
 13. Write `精華時間碼.md` with the source, original duration, highlight count, total selected duration, narrative arc, and a table of start/end/duration/title/summary.
@@ -77,6 +81,7 @@ Read `references/setup.md` before the first run on a machine. Use PowerShell 7 o
 ## Editing defaults
 
 - Favor self-contained moments with setup, payoff, and a clean exit; usually 30–180 seconds.
+- Treat narrative completeness as a release gate: every Short must make sense from its first frame without the viewer knowing the previous livestream sentence. Review the first 10 seconds and the final 10 seconds in real time, then review every internal jump cut for missing referents or abrupt topic changes.
 - Treat genuine 1080p input, completed language-model subtitle proofreading, and the approved caption-style contract as mandatory release gates. Do not render final deliverables when any gate fails.
 - Add 0.5–2 seconds of conversational context when cuts feel abrupt, without overlapping adjacent clips unnecessarily.
 - Keep horizontal clips at source resolution and frame rate where feasible.

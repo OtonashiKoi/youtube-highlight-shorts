@@ -8,6 +8,8 @@ Require every item before calling an output final:
 - Whisper or supplied subtitles proofread cue-by-cue by the current large language model.
 - Taiwan Traditional Chinese, names, Japanese/English terms, punctuation, and semantic segmentation audited.
 - Captions appear only during audible host speech.
+- Each Short has an independently understandable setup, development, payoff or conclusion, and clean exit; the first and final 10 seconds plus every internal jump cut were reviewed in real time.
+- No final keep map was generated solely from subtitle boundaries plus fixed padding.
 - Locked PNG caption style unchanged: `y=210`, 138 px Microsoft JhengHei Bold, 7–8 characters per line, two lines maximum, white-to-`#9169CD`, 15 px white rim, 7 px black keyline.
 - Face framing follows the two-eye midpoint across representative motion extremes.
 - Every direct chat-dependent reply audited; native boxes included where readable. Any AI-reconstructed card is generated separately from that livestream's own card/frame, evidence-backed, labeled reconstructed, checked character-by-character, and free of baked checkerboard backgrounds.
