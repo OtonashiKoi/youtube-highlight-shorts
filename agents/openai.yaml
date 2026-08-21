@@ -1,0 +1,4 @@
+interface:
+  display_name: "YouTube 精華短影片"
+  short_description: "1080p 直播精華、校正版字幕、人臉追蹤與原生聊天室字卡工作流"
+  default_prompt: "Use $youtube-highlight-shorts to turn this authorized livestream into verified 1080p highlights with proofread captions and native chat cards."
