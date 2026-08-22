@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "release_version": "v03",
+  "parent_approved_version": "v02",
+  "approval_state": "release_candidate",
+  "resolved_rule_precedence": [
+    "latest_clip_instruction",
+    "approved_clip_exception",
+    "series_contract",
+    "global_contract"
+  ],
+  "approved_contracts_locked": {
+    "caption": true,
+    "framing": true,
+    "chat_card": true,
+    "audio": true
+  },
+  "change_scope": ["face_tracking"],
+  "impact_audit_complete": true,
+  "tracking_review_complete": true,
+  "audio_review_complete": true,
+  "safe_zone_review_complete": true,
+  "unresolved_release_blockers": 0,
+  "previous_approved_preserved": true,
+  "publishing_package_complete": true,
+  "release_report_complete": true
+}

@@ -20,7 +20,7 @@ Read `references/setup.md` before the first run on a machine. Use PowerShell 7 o
 
 ## Workflow
 
-1. Confirm the URL and output directory. If the user gives no directory, create `<channel-or-title>_精華_<YYYYMMDD>` under the current workspace.
+1. Confirm the URL and output directory. If the user gives no directory, create `<channel-or-title>_精華_<YYYYMMDD>` under the current workspace. Read `references/project-governance.md`, resolve global/series/clip-specific rule precedence, and create `<output>/專案狀態.json` before editing. Preserve the last approved version and lock its caption, framing, chat-card, and audio contracts; a narrowly requested change must not mutate unrelated approved properties.
 2. Run `scripts/check-dependencies.ps1`. Use PowerShell 7 or newer.
 3. Require a genuine 1080p-or-higher source before editing:
    - Run `yt-dlp -F <url>` and confirm that a video stream with height `>=1080` is available.
@@ -74,9 +74,9 @@ Read `references/setup.md` before the first run on a machine. Use PowerShell 7 o
    - Write `<output>/停頓刪減稽核.md` listing original interval, removed duration, reason, and retained intentional pauses.
 13. Write `精華時間碼.md` with the source, original duration, highlight count, total selected duration, narrative arc, and a table of start/end/duration/title/summary.
 14. Run `scripts/render-highlights.py --input-dir <dir> --highlights <dir>/highlights.json`.
-15. For every Short, render and verify the uncaptioned vertical master first. Only after its crop, aspect ratio, audio, and duration pass validation, render the captioned Short from that exact master. Never build the two versions from separate crop calculations.
-16. Read `references/release-checklist.md`. Create `字幕校正狀態.json` only after completing the language-model and Traditional Chinese audit, then run `scripts/validate-release.py` with every final SRT and Short. Also spot-check the start, middle, and end of the compilation plus at least three uncaptioned/captioned Short pairs.
-17. Report the verified source resolution and frame rate, terminology-brief status, output directory, counts, total duration, transcription method, language-model proofreading status, chat-response coverage, pause-removal total, and any uncertain segments.
+15. Before each rerender, update `變更影響稽核.md` for video, audio, SRT, chat cards, teaching cards, timers, face tracking, chapters, and output metadata. Render into a new version directory; never overwrite the last approved output. For every Short, render and verify the uncaptioned vertical master first. Only after its crop, aspect ratio, audio, and duration pass validation, render the captioned Short from that exact master. Never build the two versions from separate crop calculations.
+16. Read `references/release-checklist.md`. Create `字幕校正狀態.json` only after completing the language-model and Traditional Chinese audit. Verify media with `ffprobe`, measure program loudness/true peak, inspect Shorts UI safe zones and tracking stability, and sample start/middle/end, every cut, motion extreme, and card. Record uncertainties in `待確認項目.md`; unresolved release blockers stop delivery.
+17. Complete `發布資料包.md` and `發布驗收報告.md`, update `專案狀態.json`, then run `scripts/validate-governance.py --state <output>/專案狀態.json` and `scripts/validate-release.py`. Report source/output specs, release version, transcription/LLM status, chat coverage, pause removal, face/audio/safe-zone results, uncertainty count, and exact differences from the previous approved version.
 
 ## Editing defaults
 
@@ -94,6 +94,17 @@ Read `references/setup.md` before the first run on a machine. Use PowerShell 7 o
 - Normalize filenames as `NN_title.mp4`, `NN_title_直式_無字幕.mp4`, `NN_title_直式.mp4`, and `NN_title.srt` while retaining readable Traditional Chinese.
 - Concatenate in editorial order into `精華合輯.mp4`.
 
+## Project governance
+
+Treat `references/project-governance.md` as a mandatory release contract:
+
+- Apply rules in this order: latest explicit clip instruction, approved clip exception, series contract, then global contract. A clip exception never becomes the next video's default.
+- Freeze approved caption, framing, chat-card, and audio settings. Change only creator-requested properties; verify locked properties after every rerender.
+- Use smooth face tracking with a dead zone and speed limit. Reject locks on UI, mascots, pets, chat, or background features and review reacquisition after cuts.
+- Target integrated loudness around `-16` to `-14 LUFS` and true peak `<=-1 dBTP`, unless a documented creator-approved exception applies. Speech must remain intelligible.
+- Keep important faces, captions, cards, timers, health bars, hands, and teaching content outside top/notch, right-control, and bottom-metadata obstruction zones.
+- Preserve approved versions. Use explicit `vNN` candidates and promote to `final` only after all gates pass.
+
 ## Output contract
 
 Create:
@@ -110,6 +121,12 @@ Create:
   臉部置中稽核.json
   highlights.json
   精華時間碼.md
+  專案狀態.json
+  變更影響稽核.md
+  待確認項目.md
+  音訊驗收.json
+  發布資料包.md
+  發布驗收報告.md
   聊天室觸發留言稽核.md
   聊天室回覆覆蓋率稽核.md
   停頓刪減稽核.md
@@ -127,3 +144,5 @@ Retain intermediate downloads until verification succeeds. Do not delete source 
 The transcript-first and budgeted visual-review design is informed by `bradautomates/claude-video`. Read `references/claude-video-notes.md` when maintaining the analysis layer or changing frame-budget behavior.
 
 For talk-focused VTuber Shorts, read `references/talk-short-style.md` before changing framing, captions, speaker colors, dialogue badges, or timing. Treat it as the default approved visual system.
+
+Read `references/project-governance.md` at project start, before every rerender, and before release. It defines precedence, approval locks, impact remapping, tracking/audio QA, safe zones, uncertainty handling, version preservation, publishing metadata, and final evidence reporting.
